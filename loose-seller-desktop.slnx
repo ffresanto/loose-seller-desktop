@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Business\LooseSeller.Business.csproj" />
+  <Project Path="Application\LooseSeller.Application.csproj" />
+  <Project Path="Infrastructure\LooseSeller.Infrastructure.csproj" />
+  <Project Path="LooseSeller.Desktop.csproj" />
+</Solution>

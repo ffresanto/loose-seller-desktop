@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>loose_seller_desktop</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Business\LooseSeller.Business.csproj" />
+    <ProjectReference Include="Application\LooseSeller.Application.csproj" />
+    <ProjectReference Include="Infrastructure\LooseSeller.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="logo.png" />
+    <Resource Include="logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Business\**" />
+    <Compile Remove="Application\**" />
+    <Compile Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Business\**" />
+    <EmbeddedResource Remove="Application\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <None Remove="Business\**" />
+    <None Remove="Application\**" />
+    <None Remove="Infrastructure\**" />
+  </ItemGroup>
+
+</Project>
