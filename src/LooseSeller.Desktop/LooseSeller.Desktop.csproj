@@ -19,6 +19,9 @@
   <ItemGroup>
     <Resource Include="logo.png" />
     <Resource Include="logo.ico" />
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

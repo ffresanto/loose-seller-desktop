@@ -357,10 +357,16 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="StatusTextBlock"
-                           Text="Preencha os dados para começar."
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource MutedBrush}" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="StatusTextBlock"
+                               Text="Preencha os dados para começar."
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource MutedBrush}" />
+                    <TextBlock x:Name="ApplicationVersionTextBlock"
+                               Margin="18,0,0,0"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource MutedBrush}" />
+                </StackPanel>
                 <Button Grid.Column="1"
                         Content="Preparar produto"
                         Style="{StaticResource PrimaryButton}"

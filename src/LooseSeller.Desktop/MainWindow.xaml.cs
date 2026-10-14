@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using Microsoft.Win32;
 using LooseSeller.Application.Services;
+using LooseSeller.Infrastructure.Configuration;
 using LooseSeller.Domain.Entities;
 using LooseSeller.Infrastructure.Storage;
 
@@ -17,6 +18,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        var settings = new JsonSettingsProvider().Load(Path.Combine(AppContext.BaseDirectory, "appsettings.json"));
+        ApplicationVersionTextBlock.Text = $"v{settings.Application.Version}";
         ImagesListBox.ItemsSource = _selectedImages;
         var productsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LooseArt 3D");
         _productPreparationService = new ProductPreparationService(new FileProductStorage(productsPath));
