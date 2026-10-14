@@ -100,21 +100,35 @@ From PowerShell, using the default .NET SDK path:
 To create a self-contained Windows 64-bit build:
 
 ```powershell
-& 'C:\Program Files\dotnet\dotnet.exe' publish 'LooseSeller.Desktop.csproj' -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+.\scripts\publish.ps1
 ```
 
 The output will be available in:
 
 ```text
-bin\Release\net10.0-windows\win-x64\publish
+publish
+
+## Installer
+
+The installer is built with Inno Setup. After publishing the application, open `installer\LooseSeller.iss` and compile it with `Ctrl+F9`.
+
+The generated installer is written to:
+
+```text
+installer-output\LooseSellerSetup-1.0.0.exe
+```
+
+The installer creates desktop and Start Menu shortcuts, uses `icon_installer.ico` for the setup program, and uses `icon_main.ico` for the installed application.
+
+Application settings are stored in `%LocalAppData%\Loose Seller\appsettings.json`, so the output directory can be changed without administrator permissions.
 ```
 
 ## Roadmap
 
-- Real image compression.
+- Image compression with high JPEG quality.
 - Image previews and ordering.
 - Description editor before saving.
 - AI-assisted titles, keywords, and hashtags.
 - Product preparation history.
-- Description templates.
+- Description template based on `docs\description_example.txt`.
 - Cloud storage synchronization for future iPhone access.

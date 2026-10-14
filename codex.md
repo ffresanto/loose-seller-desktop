@@ -64,3 +64,19 @@ O build deve terminar com zero erros. Se o executável estiver aberto, encerre `
 - Preserve o suporte futuro para uma interface MAUI/iPhone reutilizando `Business` e `Application`.
 - Ao adicionar arquivos de imagem ou ícones, atualize o `.csproj` como `Resource` quando necessário.
 - Preserve acentos e salve arquivos de texto em UTF-8.
+
+## Current structure and release workflow
+
+The solution follows five layers under `src`:
+
+- `LooseSeller.Core`: shared configuration models and cross-cutting types.
+- `LooseSeller.Domain`: entities, value objects, business validation, and domain contracts.
+- `LooseSeller.Application`: application services and use-case orchestration.
+- `LooseSeller.Infrastructure`: file storage, image compression, JSON configuration loading, and external details.
+- `LooseSeller.Desktop`: WPF views, user interaction, composition root, and visual resources.
+
+The application supports multiple product sizes, up to nine images, description generation from `docs\description_example.txt`, and a persisted output directory.
+
+To create a release, run `scripts\publish.ps1`. This generates a self-contained `win-x64` publication in `publish`. Then compile `installer\LooseSeller.iss` with Inno Setup. The setup executable is generated in `installer-output`.
+
+The setup icon is `docs\icons\icon_installer.ico`. The installed application and its shortcuts use `docs\icons\icon_main.ico`. Keep these roles separate when changing icons.
