@@ -19,13 +19,21 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<SizeInput> _sizes = [];
     private readonly ProductPreparationService _productPreparationService;
     private readonly JsonSettingsProvider _settingsProvider = new();
-    private readonly string _settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+    private readonly string _settingsPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "Loose Seller",
+        "appsettings.json");
     private Rect _restoreBounds;
     private bool _isWorkAreaMaximized;
 
     public MainWindow()
     {
         InitializeComponent();
+        Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath)!);
+        if (!File.Exists(_settingsPath))
+        {
+            File.Copy(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), _settingsPath);
+        }
         var settings = _settingsProvider.Load(_settingsPath);
         ApplicationVersionTextBlock.Text = $"v{settings.Application.Version}";
         ProductsDirectoryTextBox.Text = settings.Application.ProductsDirectory;
