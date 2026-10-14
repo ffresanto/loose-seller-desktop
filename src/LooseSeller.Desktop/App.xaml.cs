@@ -2,12 +2,12 @@
 using System.Data;
 using System.Windows;
 
-namespace loose_seller_desktop
+namespace LooseSeller.Desktop
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
     }
 

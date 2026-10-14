@@ -1,8 +1,10 @@
 using System.Text;
-using LooseSeller.Application.Abstractions;
-using LooseSeller.Business.Entities;
-namespace LooseSeller.Infrastructure.Services;
-public sealed class FileProductPreparationService(string productsRootPath) : IProductPreparationService
+using LooseSeller.Domain.Entities;
+using LooseSeller.Domain.Interfaces;
+
+namespace LooseSeller.Infrastructure.Storage;
+
+public sealed class FileProductStorage(string productsRootPath) : IProductFileStorage
 {
     public async Task<string> PrepareAsync(Product product, CancellationToken cancellationToken = default)
     {

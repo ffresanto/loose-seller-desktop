@@ -26,6 +26,19 @@ The final listing process on Shopee and TikTok Shop remains manual in the curren
 
 ## Architecture
 
+The solution follows the same five-layer organization used by `jarvis-auth-api`, adapted for a WPF desktop application:
+
+```text
+src/
+├── LooseSeller.Desktop         Presentation: WPF views, code-behind and composition root
+├── LooseSeller.Application     Use cases and application contracts
+├── LooseSeller.Core            Shared primitives and cross-cutting contracts
+├── LooseSeller.Domain          Entities and business rules
+└── LooseSeller.Infrastructure  File system and external integrations
+```
+
+Dependencies point inward: `Desktop` composes the application, `Infrastructure` implements application contracts, `Application` orchestrates use cases, and `Domain` remains independent from WPF and file-system details.
+
 ```text
 LooseSeller.Desktop       WPF presentation layer
         |

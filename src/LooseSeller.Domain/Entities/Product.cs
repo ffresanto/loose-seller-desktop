@@ -1,4 +1,4 @@
-namespace LooseSeller.Business.Entities;
+namespace LooseSeller.Domain.Entities;
 
 public sealed class Product
 {

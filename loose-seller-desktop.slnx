@@ -1,6 +1,9 @@
 <Solution>
-  <Project Path="Business\LooseSeller.Business.csproj" />
-  <Project Path="Application\LooseSeller.Application.csproj" />
-  <Project Path="Infrastructure\LooseSeller.Infrastructure.csproj" />
-  <Project Path="LooseSeller.Desktop.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src\LooseSeller.Application\LooseSeller.Application.csproj" />
+    <Project Path="src\LooseSeller.Core\LooseSeller.Core.csproj" />
+    <Project Path="src\LooseSeller.Desktop\LooseSeller.Desktop.csproj" />
+    <Project Path="src\LooseSeller.Domain\LooseSeller.Domain.csproj" />
+    <Project Path="src\LooseSeller.Infrastructure\LooseSeller.Infrastructure.csproj" />
+  </Folder>
 </Solution>

@@ -3,23 +3,23 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
-using LooseSeller.Application.UseCases;
-using LooseSeller.Business.Entities;
-using LooseSeller.Infrastructure.Services;
+using LooseSeller.Application.Services;
+using LooseSeller.Domain.Entities;
+using LooseSeller.Infrastructure.Storage;
 
-namespace loose_seller_desktop;
+namespace LooseSeller.Desktop;
 
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<SelectedImage> _selectedImages = [];
-    private readonly PrepareProductUseCase _prepareProductUseCase;
+    private readonly ProductPreparationService _productPreparationService;
 
     public MainWindow()
     {
         InitializeComponent();
         ImagesListBox.ItemsSource = _selectedImages;
         var productsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LooseArt 3D");
-        _prepareProductUseCase = new PrepareProductUseCase(new FileProductPreparationService(productsPath));
+        _productPreparationService = new ProductPreparationService(new FileProductStorage(productsPath));
     }
 
     private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -61,7 +61,7 @@ public partial class MainWindow : Window
             if (string.IsNullOrWhiteSpace(ModelPathTextBox.Text) || !File.Exists(ModelPathTextBox.Text)) throw new InvalidOperationException("Selecione um arquivo de impressão 3D válido.");
             var product = new Product(TitleTextBox.Text, ParseDecimal(WidthTextBox.Text, "largura"), ParseDecimal(HeightTextBox.Text, "altura"), ParseDecimal(DepthTextBox.Text, "profundidade"), MaterialTextBox.Text, ColorTextBox.Text, ModelPathTextBox.Text, _selectedImages.Select(image => image.FullPath));
             StatusTextBlock.Text = "Preparando arquivos..."; SetControlsEnabled(false);
-            var folder = await _prepareProductUseCase.ExecuteAsync(product);
+            var folder = await _productPreparationService.PrepareAsync(product);
             StatusTextBlock.Text = $"Produto preparado em: {folder}";
             MessageBox.Show($"Produto preparado com sucesso!\n\nPasta criada em:\n{folder}", "Concluído", MessageBoxButton.OK, MessageBoxImage.Information);
         }
