@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Navigation;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using LooseSeller.Application.Services;
@@ -14,6 +16,7 @@ namespace LooseSeller.Desktop;
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<SelectedImage> _selectedImages = [];
+    private readonly ObservableCollection<SizeInput> _sizes = [];
     private readonly ProductPreparationService _productPreparationService;
     private readonly JsonSettingsProvider _settingsProvider = new();
     private readonly string _settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
@@ -27,6 +30,7 @@ public partial class MainWindow : Window
         ApplicationVersionTextBlock.Text = $"v{settings.Application.Version}";
         ProductsDirectoryTextBox.Text = settings.Application.ProductsDirectory;
         ImagesListBox.ItemsSource = _selectedImages;
+        SizesListBox.ItemsSource = _sizes;
         var productsPath = string.IsNullOrWhiteSpace(settings.Application.ProductsDirectory) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LooseArt 3D") : settings.Application.ProductsDirectory;
         var templatePath = Path.Combine(AppContext.BaseDirectory, settings.Application.DescriptionTemplateFile);
         _productPreparationService = new ProductPreparationService(new FileProductStorage(productsPath, templatePath));
@@ -62,6 +66,12 @@ public partial class MainWindow : Window
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void DeveloperLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        e.Handled = true;
+    }
 
     private void SelectModelButton_Click(object sender, RoutedEventArgs e)
     {
@@ -127,6 +137,22 @@ public partial class MainWindow : Window
         }
     }
 
+    private void AddSizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        var size = new SizeInput(SizeNameTextBox.Text, ParseDecimal(HeightTextBox.Text, "altura"), ParseDecimal(WidthTextBox.Text, "largura"), ParseDecimal(DepthTextBox.Text, "comprimento"));
+        _sizes.Add(size);
+        SizeNameTextBox.Clear();
+        HeightTextBox.Text = "Altura";
+        WidthTextBox.Text = "Largura";
+        DepthTextBox.Text = "Comprimento";
+        StatusTextBlock.Text = $"{_sizes.Count} tamanho(s) adicionado(s).";
+    }
+
+    private void RemoveSizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: SizeInput size }) _sizes.Remove(size);
+    }
+
     private void MeasureTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         => e.Handled = e.Text.Any(character => !char.IsDigit(character) && character != ',' && character != '.');
 
@@ -156,6 +182,8 @@ public partial class MainWindow : Window
         DepthTextBox.Foreground = (System.Windows.Media.Brush)FindResource("MutedBrush");
         ModelPathTextBox.Clear();
         _selectedImages.Clear();
+        _sizes.Clear();
+        SizeNameTextBox.Text = "Único";
         StatusTextBlock.Text = "Formulário limpo.";
     }
 
@@ -163,16 +191,66 @@ public partial class MainWindow : Window
     {
         try
         {
+            ClearValidationMarks();
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text)) throw new InvalidOperationException("Informe o título do produto.");
             if (string.IsNullOrWhiteSpace(ModelPathTextBox.Text) || !File.Exists(ModelPathTextBox.Text)) throw new InvalidOperationException("Selecione um arquivo de impressão 3D válido.");
-            var product = new Product(TitleTextBox.Text, ParseDecimal(WidthTextBox.Text, "largura"), ParseDecimal(HeightTextBox.Text, "altura"), ParseDecimal(DepthTextBox.Text, "profundidade"), MaterialTextBox.Text, ParseInteger(MadeToOrderDaysTextBox.Text, "dias sob encomenda"), ReferenceTextBox.Text, ModelPathTextBox.Text, _selectedImages.Select(image => image.FullPath));
+            var sizes = _sizes.Count > 0
+                ? _sizes.Select(size => new ProductSize(size.Name, size.Height, size.Width, size.Length))
+                : [new ProductSize(SizeNameTextBox.Text, ParseDecimal(HeightTextBox.Text, "altura"), ParseDecimal(WidthTextBox.Text, "largura"), ParseDecimal(DepthTextBox.Text, "comprimento"))];
+            var product = new Product(TitleTextBox.Text, MaterialTextBox.Text, ParseInteger(MadeToOrderDaysTextBox.Text, "dias sob encomenda"), ReferenceTextBox.Text, ModelPathTextBox.Text, sizes, _selectedImages.Select(image => image.FullPath));
             StatusTextBlock.Text = "Preparando arquivos..."; SetControlsEnabled(false);
             var folder = await _productPreparationService.PrepareAsync(product);
             StatusTextBlock.Text = $"Produto preparado em: {folder}";
-            MessageBox.Show($"Produto preparado com sucesso!\n\nPasta criada em:\n{folder}", "Concluído", MessageBoxButton.OK, MessageBoxImage.Information);
+            new OperationResultWindow("Produto preparado", $"O produto foi criado com sucesso.\n\nPasta:\n{folder}", true)
+            {
+                Owner = this
+            }.ShowDialog();
         }
-        catch (Exception exception) { StatusTextBlock.Text = "Não foi possível preparar o produto."; MessageBox.Show(exception.Message, "Atenção", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception exception)
+        {
+            HighlightInvalidFields(exception.Message);
+            StatusTextBlock.Text = "Não foi possível preparar o produto.";
+            new OperationResultWindow("Não foi possível preparar", exception.Message, false)
+            {
+                Owner = this
+            }.ShowDialog();
+        }
         finally { SetControlsEnabled(true); }
+    }
+
+    private void ClearValidationMarks()
+    {
+        foreach (var textBox in new[]
+        {
+            TitleTextBox, MaterialTextBox, MadeToOrderDaysTextBox, ReferenceTextBox,
+            HeightTextBox, WidthTextBox, DepthTextBox, ModelPathTextBox, SizeNameTextBox
+        })
+        {
+            textBox.ClearValue(BorderBrushProperty);
+        }
+    }
+
+    private void HighlightInvalidFields(string message)
+    {
+        var invalidBrush = new System.Windows.Media.SolidColorBrush(
+            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FF8FAD"));
+        TextBox? firstInvalid = null;
+
+        void Mark(TextBox textBox)
+        {
+            textBox.BorderBrush = invalidBrush;
+            firstInvalid ??= textBox;
+        }
+
+        if (message.Contains("título", StringComparison.OrdinalIgnoreCase)) Mark(TitleTextBox);
+        if (message.Contains("arquivo 3D", StringComparison.OrdinalIgnoreCase)) Mark(ModelPathTextBox);
+        if (message.Contains("referência", StringComparison.OrdinalIgnoreCase)) Mark(ReferenceTextBox);
+        if (message.Contains("altura", StringComparison.OrdinalIgnoreCase)) Mark(HeightTextBox);
+        if (message.Contains("largura", StringComparison.OrdinalIgnoreCase)) Mark(WidthTextBox);
+        if (message.Contains("comprimento", StringComparison.OrdinalIgnoreCase)) Mark(DepthTextBox);
+        if (message.Contains("tamanho", StringComparison.OrdinalIgnoreCase)) Mark(SizeNameTextBox);
+
+        firstInvalid?.Focus();
     }
 
     private static decimal ParseDecimal(string value, string fieldName)
@@ -200,5 +278,10 @@ public partial class MainWindow : Window
 
         private static string FormatFileSize(long bytes)
             => bytes < 1024 ? $"{bytes} B" : $"{bytes / 1024d:0.0} KB";
+    }
+
+    private sealed record SizeInput(string Name, decimal Height, decimal Width, decimal Length)
+    {
+        public string Summary => $"{Name} - Altura {Height}cm x Largura {Width}cm x Comprimento {Length}cm";
     }
 }

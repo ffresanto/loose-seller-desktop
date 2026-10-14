@@ -52,7 +52,19 @@ public sealed class FileProductStorage(string productsRootPath, string descripti
             .Replace("[Material]", product.Material)
             .Replace("[DIAS SOB-ENCOMENDA]", product.MadeToOrderDays.ToString())
             .Replace("[REFERÊNCIA]", product.Reference)
-            .Replace("[DIMENSÕES DO PRODUTO]", $"Altura {product.Height}cm x Largura {product.Width}cm x Comprimento {product.Length}cm");
+            .Replace("[DIMENSÕES DO PRODUTO]", BuildSizesDescription(product.Sizes));
+    }
+
+    private static string BuildSizesDescription(IReadOnlyCollection<ProductSize> sizes)
+    {
+        if (sizes.Count == 1)
+        {
+            var size = sizes.First();
+            return $"Único - Altura {size.Height}cm x Largura {size.Width}cm x Comprimento {size.Length}cm";
+        }
+
+        return string.Join(Environment.NewLine, sizes.Select(size =>
+            $"{size.Name} - Altura {size.Height}cm x Largura {size.Width}cm x Comprimento {size.Length}cm"));
     }
 
     private static string Sanitize(string name)

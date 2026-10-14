@@ -1,0 +1,82 @@
+<Window x:Class="LooseSeller.Desktop.OperationResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        ShowInTaskbar="False"
+        Width="460"
+        Height="230"
+        MinWidth="460"
+        MaxWidth="460"
+        MinHeight="230"
+        MaxHeight="230"
+        Background="#19142A"
+        Foreground="#F8F5FF">
+    <Border BorderBrush="#30254A" BorderThickness="1" Padding="22">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Content="×"
+                    FontFamily="Segoe UI"
+                    FontWeight="SemiBold"
+                    FontSize="18"
+                    Width="32"
+                    Height="28"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Foreground="#C7BED6"
+                    Cursor="Hand"
+                    Click="CloseButton_Click" />
+            <TextBlock x:Name="TitleTextBlock" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="1" x:Name="MessageTextBlock" Margin="0,14,0,12" TextWrapping="Wrap" Foreground="#A69BBD" />
+            <Button Grid.Row="2"
+                    Content="OK"
+                    Width="90"
+                    Height="36"
+                    HorizontalAlignment="Right"
+                    FontFamily="Segoe UI"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="CloseButton_Click">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#7C3AED" Offset="0" />
+                        <GradientStop Color="#E11D8D" Offset="1" />
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="OkBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderThickness="0">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="OkBorder" Property="Background" Value="#D98DFF" />
+                                            <Setter Property="Foreground" Value="#100D1B" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Border>
+</Window>

@@ -355,6 +355,8 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="14" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
                                     <TextBlock Text="Material" FontWeight="SemiBold" />
@@ -364,9 +366,14 @@
                                     <TextBlock Text="Dias sob encomenda" FontWeight="SemiBold" />
                                     <TextBox x:Name="MadeToOrderDaysTextBox" Text="4" IsReadOnly="True" />
                                 </StackPanel>
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="Referência" FontWeight="SemiBold" />
+                                    <TextBox x:Name="ReferenceTextBox" MaxLength="6" Text="LA" ToolTip="Formato: LA0000" PreviewTextInput="ReferenceTextBox_PreviewTextInput" />
+                                </StackPanel>
                             </Grid>
 
                             <TextBlock Text="Medidas em centímetros" FontWeight="SemiBold" />
+                            <TextBox x:Name="SizeNameTextBox" Text="Único" ToolTip="Nome do tamanho" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -379,9 +386,17 @@
                                 <TextBox x:Name="WidthTextBox" Grid.Column="2" Text="Largura" Foreground="{StaticResource MutedBrush}" ToolTip="Largura em cm" GotFocus="MeasureTextBox_GotFocus" LostFocus="MeasureTextBox_LostFocus" PreviewTextInput="MeasureTextBox_PreviewTextInput" />
                                 <TextBox x:Name="DepthTextBox" Grid.Column="4" Text="Comprimento" Foreground="{StaticResource MutedBrush}" ToolTip="Comprimento em cm" GotFocus="MeasureTextBox_GotFocus" LostFocus="MeasureTextBox_LostFocus" PreviewTextInput="MeasureTextBox_PreviewTextInput" />
                             </Grid>
-
-                            <TextBlock Text="Referência" FontWeight="SemiBold" />
-                            <TextBox x:Name="ReferenceTextBox" Width="90" HorizontalAlignment="Left" MaxLength="6" Text="LA" ToolTip="Formato: LA0000" PreviewTextInput="ReferenceTextBox_PreviewTextInput" />
+                            <Button Content="ADICIONAR TAMANHO" Click="AddSizeButton_Click" Margin="0,0,0,10" />
+                            <ListBox x:Name="SizesListBox" Height="92" Margin="0,0,0,14">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="2,3">
+                                            <Button DockPanel.Dock="Right" Content="REMOVER" Tag="{Binding}" Click="RemoveSizeButton_Click" Padding="10,5" Margin="10,0,0,0" />
+                                            <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
 
                             <TextBlock Text="Arquivo de impressão 3D *" FontWeight="SemiBold" />
                             <Grid Margin="0,6,0,0">
@@ -489,6 +504,17 @@
                                Margin="18,0,0,0"
                                VerticalAlignment="Center"
                                Foreground="{StaticResource MutedBrush}" />
+                    <TextBlock Margin="18,0,0,0"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource MutedBrush}">
+                        <Run Text="Desenvolvido por " />
+                        <Hyperlink NavigateUri="https://www.linkedin.com/in/franccesco-felipe-rodrigues"
+                                   RequestNavigate="DeveloperLink_RequestNavigate"
+                                   Foreground="#D98DFF"
+                                   TextDecorations="{x:Null}">
+                            <Run Text="Franccesco Felipe" />
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Panel.ZIndex="10">
                     <Button Content="LIMPAR FORMULÁRIO"
