@@ -18,4 +18,10 @@ public sealed class JsonSettingsProvider
             PropertyNameCaseInsensitive = true
         }) ?? new ApplicationSettings();
     }
+
+    public void Save(string filePath, ApplicationSettings settings)
+    {
+        var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(filePath, json);
+    }
 }

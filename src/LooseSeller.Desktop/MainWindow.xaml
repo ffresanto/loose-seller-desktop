@@ -39,6 +39,49 @@
             <GradientStop Color="#E11D8D" Offset="1" />
         </LinearGradientBrush>
 
+        <Style x:Key="HeaderScrollThumb" TargetType="Thumb">
+            <Setter Property="Background" Value="#29223C" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                CornerRadius="4" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Background" Value="#0D0A15" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Opacity="0" IsHitTestVisible="False" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Margin="1,2"
+                                           Style="{StaticResource HeaderScrollThumb}"
+                                           FocusVisualStyle="{x:Null}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Opacity="0" IsHitTestVisible="False" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="#0F0C18" />
             <Setter Property="Foreground" Value="#F8F5FF" />
@@ -48,6 +91,36 @@
             <Setter Property="Padding" Value="10,8" />
             <Setter Property="Margin" Value="0,6,0,14" />
             <Setter Property="FontSize" Value="13" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="TextBoxBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TextBoxBorder" Property="BorderBrush" Value="#D98DFF" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="TextBoxBorder" Property="BorderBrush" Value="#D98DFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#D98DFF" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="#D98DFF" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="Button">
@@ -73,8 +146,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="#E11D8D" />
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#F04FAE" />
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#D98DFF" />
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#D98DFF" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ButtonBorder" Property="Background" Value="#B51673" />
@@ -90,7 +163,8 @@
 
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{StaticResource AccentGradient}" />
-            <Setter Property="BorderBrush" Value="#E11D8D" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Width" Value="190" />
             <Setter Property="Height" Value="44" />
             <Setter Property="Padding" Value="8,0" />
@@ -105,6 +179,38 @@
             <Setter Property="Foreground" Value="#C7BED6" />
             <Setter Property="FontSize" Value="15" />
             <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="CaptionButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CaptionButtonBorder" Property="Background" Value="#D98DFF" />
+                                <Setter TargetName="CaptionButtonBorder" Property="BorderBrush" Value="#D98DFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="CaptionButtonBorder" Property="Background" Value="#B875D9" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D98DFF" />
+                    <Setter Property="Foreground" Value="#100D1B" />
+                    <Setter Property="BorderBrush" Value="#D98DFF" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#B875D9" />
+                    <Setter Property="Foreground" Value="#100D1B" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="ListBox">
@@ -187,6 +293,10 @@
         </Border>
 
         <ScrollViewer Grid.Row="2"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      BorderBrush="Transparent"
+                      FocusVisualStyle="{x:Null}"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <Grid Margin="28,22">
@@ -227,8 +337,18 @@
                                        FontSize="19"
                                        FontWeight="SemiBold" />
 
+                            <TextBlock Text="Diretório de saída *" FontWeight="SemiBold" />
+                            <Grid Margin="0,6,0,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="ProductsDirectoryTextBox" IsReadOnly="True" Margin="0" />
+                                <Button Grid.Column="1" Content="Procurar" Margin="10,0,0,0" Click="SelectProductsDirectoryButton_Click" />
+                            </Grid>
+
                             <TextBlock Text="Título do produto *" FontWeight="SemiBold" />
-                            <TextBox x:Name="TitleTextBox" />
+                            <TextBox x:Name="TitleTextBox" ToolTip="Digite o título do produto" />
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -241,8 +361,8 @@
                                     <TextBox x:Name="MaterialTextBox" Text="PLA" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="Cor" FontWeight="SemiBold" />
-                                    <TextBox x:Name="ColorTextBox" />
+                                    <TextBlock Text="Dias sob encomenda" FontWeight="SemiBold" />
+                                    <TextBox x:Name="MadeToOrderDaysTextBox" Text="4" IsReadOnly="True" />
                                 </StackPanel>
                             </Grid>
 
@@ -255,10 +375,13 @@
                                     <ColumnDefinition Width="10" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="WidthTextBox" Grid.Column="0" ToolTip="Largura" />
-                                <TextBox x:Name="HeightTextBox" Grid.Column="2" ToolTip="Altura" />
-                                <TextBox x:Name="DepthTextBox" Grid.Column="4" ToolTip="Profundidade" />
+                                <TextBox x:Name="HeightTextBox" Grid.Column="0" Text="Altura" Foreground="{StaticResource MutedBrush}" ToolTip="Altura em cm" GotFocus="MeasureTextBox_GotFocus" LostFocus="MeasureTextBox_LostFocus" PreviewTextInput="MeasureTextBox_PreviewTextInput" />
+                                <TextBox x:Name="WidthTextBox" Grid.Column="2" Text="Largura" Foreground="{StaticResource MutedBrush}" ToolTip="Largura em cm" GotFocus="MeasureTextBox_GotFocus" LostFocus="MeasureTextBox_LostFocus" PreviewTextInput="MeasureTextBox_PreviewTextInput" />
+                                <TextBox x:Name="DepthTextBox" Grid.Column="4" Text="Comprimento" Foreground="{StaticResource MutedBrush}" ToolTip="Comprimento em cm" GotFocus="MeasureTextBox_GotFocus" LostFocus="MeasureTextBox_LostFocus" PreviewTextInput="MeasureTextBox_PreviewTextInput" />
                             </Grid>
+
+                            <TextBlock Text="Referência" FontWeight="SemiBold" />
+                            <TextBox x:Name="ReferenceTextBox" Width="90" HorizontalAlignment="Left" MaxLength="6" Text="LA" ToolTip="Formato: LA0000" PreviewTextInput="ReferenceTextBox_PreviewTextInput" />
 
                             <TextBlock Text="Arquivo de impressão 3D *" FontWeight="SemiBold" />
                             <Grid Margin="0,6,0,0">
@@ -296,7 +419,7 @@
                                        FontSize="10"
                                        FontWeight="Bold" />
                             <TextBlock Grid.Row="1"
-                                       Text="Adicione até 5 imagens para o anúncio."
+                                       Text="Adicione até 9 imagens para o anúncio."
                                        Margin="0,7,0,15"
                                        Foreground="{StaticResource MutedBrush}" />
 
@@ -323,7 +446,7 @@
                                                        VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis" />
                                             <TextBlock Grid.Column="2"
-                                                       Text="Imagem"
+                                                       Text="{Binding FileSize}"
                                                        VerticalAlignment="Center"
                                                        Foreground="{StaticResource MutedBrush}"
                                                        FontSize="10" />
@@ -367,10 +490,14 @@
                                VerticalAlignment="Center"
                                Foreground="{StaticResource MutedBrush}" />
                 </StackPanel>
-                <Button Grid.Column="1"
-                        Content="Preparar produto"
-                        Style="{StaticResource PrimaryButton}"
-                        Click="PrepareProductButton_Click" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Panel.ZIndex="10">
+                    <Button Content="LIMPAR FORMULÁRIO"
+                            Margin="0,0,10,0"
+                            Click="ClearFormButton_Click" />
+                    <Button Content="PREPARAR PRODUTO"
+                            Style="{StaticResource PrimaryButton}"
+                            Click="PrepareProductButton_Click" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

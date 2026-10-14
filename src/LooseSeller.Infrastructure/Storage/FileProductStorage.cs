@@ -1,43 +1,63 @@
 using System.Text;
+using System.Drawing;
+using System.Drawing.Imaging;
 using LooseSeller.Domain.Entities;
 using LooseSeller.Domain.Interfaces;
 
 namespace LooseSeller.Infrastructure.Storage;
 
-public sealed class FileProductStorage(string productsRootPath) : IProductFileStorage
+public sealed class FileProductStorage(string productsRootPath, string descriptionTemplatePath) : IProductFileStorage
 {
     public async Task<string> PrepareAsync(Product product, CancellationToken cancellationToken = default)
     {
-        var folder = Path.Combine(productsRootPath, Sanitize(product.Title)); Directory.CreateDirectory(folder);
+        var folderName = Sanitize($"{product.Reference} - {product.Title}");
+        var folder = Path.Combine(productsRootPath, folderName);
+        Directory.CreateDirectory(folder);
+
         File.Copy(product.ModelFilePath, Path.Combine(folder, Path.GetFileName(product.ModelFilePath)), true);
         var index = 1;
         foreach (var image in product.ImageFilePaths)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            File.Copy(image, Path.Combine(folder, $"imagem-{index:00}{Path.GetExtension(image)}"), true); index++;
+            CompressImage(image, Path.Combine(folder, $"imagem-{index:00}.jpg"));
+            index++;
         }
-        await File.WriteAllTextAsync(Path.Combine(folder, "descricao.txt"), BuildDescription(product), Encoding.UTF8, cancellationToken);
+
+        var description = await BuildDescriptionAsync(product, cancellationToken);
+        await File.WriteAllTextAsync(Path.Combine(folder, "descricao.txt"), description, Encoding.UTF8, cancellationToken);
         return folder;
     }
-    private static string BuildDescription(Product p) =>
-$"""
-{p.Title}
 
-Produto produzido por impressão 3D.
+    private static void CompressImage(string sourcePath, string destinationPath)
+    {
+        using var source = Image.FromFile(sourcePath);
+        using var bitmap = new Bitmap(source.Width, source.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+        using (var graphics = Graphics.FromImage(bitmap))
+        {
+            graphics.Clear(Color.White);
+            graphics.DrawImage(source, 0, 0, source.Width, source.Height);
+        }
 
-Medidas aproximadas:
-- Largura: {p.Width} cm
-- Altura: {p.Height} cm
-- Profundidade: {p.Depth} cm
+        var encoder = ImageCodecInfo.GetImageEncoders().First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
+        using var parameters = new EncoderParameters(1);
+        parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 92L);
+        bitmap.Save(destinationPath, encoder, parameters);
+    }
 
-Material: {p.Material}
-Cor: {p.Color}
+    private async Task<string> BuildDescriptionAsync(Product product, CancellationToken cancellationToken)
+    {
+        var template = await File.ReadAllTextAsync(descriptionTemplatePath, cancellationToken);
+        return template
+            .Replace("[TÍTULO DO PRODUTO]", product.Title)
+            .Replace("[Material]", product.Material)
+            .Replace("[DIAS SOB-ENCOMENDA]", product.MadeToOrderDays.ToString())
+            .Replace("[REFERÊNCIA]", product.Reference)
+            .Replace("[DIMENSÕES DO PRODUTO]", $"Altura {product.Height}cm x Largura {product.Width}cm x Comprimento {product.Length}cm");
+    }
 
-As medidas e a tonalidade podem apresentar pequenas variações devido ao processo de impressão 3D.
-""";
     private static string Sanitize(string name)
     {
         var invalid = Path.GetInvalidFileNameChars();
-        return new string(name.Select(c => invalid.Contains(c) ? '-' : c).ToArray()).Trim().TrimEnd('.');
+        return new string(name.Select(character => invalid.Contains(character) ? '-' : character).ToArray()).Trim().TrimEnd('.');
     }
 }
