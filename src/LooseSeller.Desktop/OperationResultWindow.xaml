@@ -34,6 +34,7 @@
                     BorderThickness="0"
                     Foreground="#C7BED6"
                     Cursor="Hand"
+                    Panel.ZIndex="10"
                     Click="CloseButton_Click" />
             <TextBlock x:Name="TitleTextBlock" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" />
             <TextBlock Grid.Row="1" x:Name="MessageTextBlock" Margin="0,14,0,12" TextWrapping="Wrap" Foreground="#A69BBD" />
